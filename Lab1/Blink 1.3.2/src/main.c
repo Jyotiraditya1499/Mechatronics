@@ -7,24 +7,24 @@
 
 #include "MEAM_general.h"  // includes the resources included in the MEAM_general.h file
 
-#define DUTY_CYCLE 50   // Set the desired duty cycle
-#define DUTY_CYCLE_VAL ((DUTY_CYCLE*255)/100)  //Convert % to OCR3A value
+#define COMPARE 50000 //Value based on the prescaller used to generate 20Hz
+
 
 int main(void)
 {
     _clockdivide(0); //set the clock speed to 16Mhz
     DDRB |= (1 << PB7);  // Set PB7 as OUTPUT
+    TCCR3B = (1 << CS31) | (1 << CS30);  // Counter 3 (Prescaler 64)
+    TCCR3A = 0; // (Normal Mode, 16-bit)
 
-    // Configure Timer3 for Mode 5 (PWM, Phase-Correct, 8-bit)
-    TCCR3B = (1 << CS31) | (1 << CS30);  // Counter 3 (Prescaler 64), Mode 5
-    TCCR3A = (1 << WGM30) | (1 << COM3A1); // (PWM Mode 5)
+    for(;;){
 
-    OCR3A = DUTY_CYCLE_VAL;  // Set Initial duty cycle
-
-    while(1){
+        if (TCNT3 >= COMPARE){  //  Wait untill Timer3 reaches COMPARE value
+            PORTB ^= (1 << PB7); // Toggle LED at PORT B7
+            TCNT3 = 0;  //Reset Timer3
+        }
 
     }
-
     return 0;   /* never reached */
 }
 
