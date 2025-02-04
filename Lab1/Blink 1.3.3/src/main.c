@@ -5,25 +5,55 @@
  * License: You may use, distribute and modify this code under the terms of the GNU GPLv3.0 license.
 */
 
-#include "MEAM_general.h"  // includes the resources included in the MEAM_general.h file
+#include "MEAM_general.h"  // Includes the MEAM resources
 
-#define DUTY_CYCLE 50
-#define DUTY_CYCLE_VAL ((DUTY_CYCLE * 255) / 100)
+#define DUTY_CYCLE 50  // Desired duty cycle (0-100)
+#define DUTY_CYCLE_VAL ((DUTY_CYCLE * 255) / 100)  // Convert % to OCR3A value
 
 int main(void) {
     _clockdivide(0);
-    DDRB |= (1 << PB7);  // Set PB7 as OUTPUT
+    DDRC |= (1 << PC6);  // Set PC6 (OC3A) as OUTPUT
+    
+    TCCR3A = 0;
+    TCCR3B = 0;
 
     // Configure Timer3 for Mode 5 (PWM, Phase-Correct, 8-bit)
-    TCCR3A = (1 << WGM30) | (1 << COM3A1) | (1 << COM3A0);  // Inverting PWM (set on match, clear at rollover)
-    TCCR3B = (1 << CS31);  // Prescaler 8
+    TCCR3A = (1 << WGM30) | (1 << COM3A1);  // Non-inverting PWM on OC3A (PC6)
+    TCCR3B = (1 << WGM32);
 
-    OCR3A = DUTY_CYCLE_VAL;  // Set duty cycle
+    
 
-    while (1) {}  // PWM runs automatically
+    if (DUTY_CYCLE == 0)
+        {
+            PORTC &= ~(1 << PC6);  // Clear PC6 manually
+            /* code */
+        }
 
+    // else if (DUTY_CYCLE == 100)
+
+        else
+        {
+        TCCR3B = (1 << CS31);  // Prescaler 8
+        OCR3A = DUTY_CYCLE_VAL;  // Set initial duty cycle
+
+        }
+
+    while (1) {  // PWM runs automatically
+
+
+    }  
     return 0;
 }
 
+
+// Function to initialize Timer3 PWM on PC6 (OC3A)
+void setup_PWM(void) {
+    _clockdivide(0);
+    DDRC |= (1 << PC6);  // Set PC6 (OC3A) as OUTPUT
+
+    // Configure Timer3 for Mode 5 (PWM, Phase-Correct, 8-bit)
+    TCCR3A = (1 << WGM30) | (1 << COM3A1);  // Non-inverting PWM
+    TCCR3B = (1 << CS32);  // Prescaler 256 (PWM ~122.5 kHz)
+}
 
 
