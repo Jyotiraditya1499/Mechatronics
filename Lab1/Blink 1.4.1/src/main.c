@@ -5,65 +5,62 @@
  * License: You may use, distribute and modify this code under the terms of the GNU GPLv3.0 license.
 */
 
-#include "MEAM_general.h"  // Includes MEAM resources
-#include <util/delay.h>    // Required for _delay_ms()
+#include "MEAM_general.h"  
+#include <util/delay.h>  //Include delay function
+#include "m_usb.h"  //Include USB comm.(for debugging, if needed)
 
-#define MAX_BRIGHTNESS 255  // Maximum PWM value (100% brightness)
-#define FADE_STEPS 100      // Number of steps for smooth fading
+int i = 0;
 
-// Function to initialize Timer3 PWM on PC6 (OC3A)
-void setup_PWM(void) {
-    _clockdivide(0);
-    DDRC |= (1 << PC6);  // Set PC6 (OC3A) as OUTPUT
-
-    // Configure Timer3 for Mode 5 (PWM, Phase-Correct, 8-bit)
-    TCCR3A = (1 << WGM30) | (1 << COM3A1);  // Non-inverting PWM
-    TCCR3B = (1 << CS31);  // Prescaler 8 (PWM ~3.92 kHz)
-}
-
-// Function to set LED to maximum brightness instantly
-void set_max_intensity(void) {
-    OCR3A = MAX_BRIGHTNESS;  // Full brightness
-}
-
-// Function to turn LED off instantly
-void set_min_intensity(void) {
-    OCR3A = 0;  // LED OFF
-}
-
-// Function to gradually fade LED in and out
-void pulse_LED(uint16_t fade_in_time, uint16_t fade_out_time) {
-    uint8_t i;
-    uint16_t step_delay_in = fade_in_time / FADE_STEPS;   // Delay per step for fade-in
-    uint16_t step_delay_out = fade_out_time / FADE_STEPS; // Delay per step for fade-out
-
-    // Fade in (0 to MAX_BRIGHTNESS)
-    for (i = 0; i <= MAX_BRIGHTNESS; i += (MAX_BRIGHTNESS / FADE_STEPS)) {
-        OCR3A = i;
-        _delay_ms(step_delay_in);
-    }
-
-    // Fade out (MAX_BRIGHTNESS to 0)
-    for (i = MAX_BRIGHTNESS; i > 0; i -= (MAX_BRIGHTNESS / FADE_STEPS)) {
-        OCR3A = i;
-        _delay_ms(step_delay_out);
-    }
-
-    OCR3A = 0;  // Ensure it fully turns off at the end
-}
+void setup_PWM(int DUTY);  // Function to generate PWM signal
+void fade_out(int start, int end);  //Function to create fading out effect
+void fade_in(int start, int end);  //Fucntion to create fading in effect
 
 int main(void) {
-    setup_PWM();  // Initialize PWM
+    _clockdivide(0);  // Set the system clock speed to 16 MHz
+    DDRC |= (1 << PC6);  // Set PC6 (OC3A) as OUTPUT
 
-    uint16_t fade_in_time = 500;  // Default fade-in time (milliseconds)
-    uint16_t fade_out_time = 500; // Default fade-out time (milliseconds)
+    setup_PWM(0);  // Ensure LED starts off
 
-    while (1) {
-        pulse_LED(fade_in_time, fade_out_time);  // Smooth pulsing effect
+    for (;;) {  // Infinite loop
+        fade_in(0, 100);  //  Gradually increase brightness from 0% to 100%
+        fade_out(100, 0);  // Gradually decrease brightness from 100% to 0%
     }
 
-    return 0;
+    return 0; // Never reached
 }
+
+void setup_PWM(int DUTY) {
+    if (DUTY == 0) {
+        OCR3A = 0;  // Turn off LED initially, output compare register is 0
+    } 
+    
+    else {
+        OCR3A = (DUTY * 255) / 100;  // Convert duty cycle (0-100%) to 8-bit (0-255) value
+
+        // Configure Timer3 for Mode 5 (PWM, Phase-Correct, 8-bit)
+        TCCR3A = (1 << WGM30) | (1 << COM3A1);  // Non-inverting PWM on OC3A
+        TCCR3B = (1 << CS32);  // Prescaler 256 (~122 Hz PWM frequency)
+    }
+}
+
+// Function to gradually increase brightness from 0% to 100%
+void fade_in(int start, int end) {
+    for (i = start; i <= end; i++) {  //Increase brightness in small steps
+        setup_PWM(i);                 // Set PWM duty cycle
+        _delay_ms(3);                 // Delay per step to control fade speed (Total fade-in: 300ms)
+    }
+}
+
+// Function to gradually decrease brightness from 100% to 0%
+void fade_out(int start, int end) {
+    for (i = start; i >= end; i--) {  //Decrease brightness in small steps
+        setup_PWM(i);                 // Set PWM duty cycle
+        _delay_ms(6);                 // Delay per step to control fade speed (Total fade-out: 600ms)
+    }
+}
+
+
+
 
 
 
