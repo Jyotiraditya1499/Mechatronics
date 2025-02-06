@@ -1,5 +1,5 @@
 /* Name: main.c
- * Project: Lab 1
+ * Project: Lab 1 1.2.3
  * Author: Jyotiraditya
  * Copyright: Jyotiraditya Ingawale - All Rights Reserved
  * License: You may use, distribute and modify this code under the terms of the GNU GPLv3.0 license.

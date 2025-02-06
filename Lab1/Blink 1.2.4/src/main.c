@@ -7,7 +7,7 @@
 
 
 #include "MEAM_general.h"  // includes the resources included in the MEAM_general.h file
-#define DUTYCYCLE 50  // Set the duty cycle percentage
+#define DUTYCYCLE 0  // Set the duty cycle percentage
 
 int main(void)
 {
@@ -17,6 +17,7 @@ int main(void)
 
    
     for(;;){
+
        
         PORTB |= (1 << PB7);  // Turn ON led
         _delay_ms(10*DUTYCYCLE);  //Delay 

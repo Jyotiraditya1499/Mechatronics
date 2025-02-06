@@ -53,12 +53,12 @@ void setup_PWM(int DUTY) {
 
 // Generic fade function (smooth transition between intensities)
 void fade(int start, int end, int duration) {
-    float step_size = (float)(end - start) / FADE_STEPS;    // Calculate step size
-    int step_delay = duration / FADE_STEPS;                 // Calculate delay per step
-    float intensity = start;                                // Use float to prevent rounding errors
+    float step_size = (float)(end - start) / FADE_STEPS;  // Calculate step size
+    int step_delay = duration / FADE_STEPS;  // Calculate delay per step
+    float intensity = start;  // Use float to prevent rounding errors
 
     for (i = 0; i < FADE_STEPS; i++) {
-        setup_PWM((int)intensity);  // Convert back to int when setting brightness
+        setup_PWM((int)intensity);  // Setting brightness
         intensity += step_size;     // Smoothly update brightness
         _delay_ms(step_delay);
     }

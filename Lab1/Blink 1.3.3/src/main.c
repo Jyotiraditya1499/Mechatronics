@@ -29,8 +29,6 @@ int main(void) {
             /* code */
         }
 
-    // else if (DUTY_CYCLE == 100)
-
         else
         {
         TCCR3B = (1 << CS31);  // Prescaler 8
