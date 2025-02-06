@@ -1,12 +1,12 @@
 /* Name: main.c
- * Project: Lab 1
+ * Project: Lab 1 1.4.1
  * Author: Jyotiraditya
  * Copyright: Jyotiraditya Ingawale - All Rights Reserved
  * License: You may use, distribute and modify this code under the terms of the GNU GPLv3.0 license.
 */
 
 #include "MEAM_general.h"  
-#include <util/delay.h>  //Include delay function
+#include "util/delay.h"  //Include delay function
 #include "m_usb.h"  //Include USB comm.(for debugging, if needed)
 
 int i = 0;

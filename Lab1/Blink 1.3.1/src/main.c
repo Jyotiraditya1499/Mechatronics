@@ -9,7 +9,6 @@
 
 #define COMPARE 50000 //Value based on the prescaller used to generate 20Hz
 
-
 int main(void)
 {
     _clockdivide(0); //set the clock speed to 16Mhz
