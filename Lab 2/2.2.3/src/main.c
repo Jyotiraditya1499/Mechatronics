@@ -178,6 +178,7 @@
 
 
 #include "MEAM_general.h"
+
 #include "m_usb.h"
 
 volatile uint16_t first_capture = 0;
@@ -199,13 +200,13 @@ void setup() {
     DDRD &= ~(1 << PD4);
     PORTD |= (1 << PD4);
 
-    // ✅ Configure Timer1 with 256 prescaler (16MHz / 256 = 62.5 kHz)
+    //  Configure Timer1 with 256 prescaler (16MHz / 256 = 62.5 kHz)
     TCCR1B |= (1 << CS12);  
     TCCR1B |= (1 << ICES1);  // Start capturing on rising edge
     TIMSK1 |= (1 << ICIE1);  // Enable input capture interrupt
-    TIMSK1 |= (1 << TOIE1);  // ✅ Enable overflow interrupt for timeout
+    TIMSK1 |= (1 << TOIE1);  // Enable overflow interrupt for timeout
 
-    sei();  // ✅ Enable global interrupts
+    sei();  // Enable global interrupts
 }
 
 // **ISR for Input Capture**
@@ -213,43 +214,43 @@ ISR(TIMER1_CAPT_vect) {
     first_capture = second_capture;  // Store previous capture
     second_capture = ICR1;  // Store new capture
 
-    if (first_capture != 0) {  // ✅ Prevent errors on first pulse
+    if (first_capture != 0) {  // Prevent errors on first pulse
         if (second_capture >= first_capture) {
             pulse_duration = second_capture - first_capture;
         } else {
-            pulse_duration = (65536 - first_capture) + second_capture;  // ✅ Handle overflow case
+            pulse_duration = (65536 - first_capture) + second_capture;  // Handle overflow case
         }
     }
-    timeout_flag = 0;  // ✅ Reset timeout flag (signal detected)
+    timeout_flag = 0;  // Reset timeout flag (signal detected)
 }
 
 // **ISR for Timer Overflow (Timeout)**
 ISR(TIMER1_OVF_vect) {
-    timeout_flag = 1;  // ✅ Mark timeout if no signal received
+    timeout_flag = 1;  // Mark timeout if no signal received
 }
 
 // **Detect and Process Frequency**
 void frequency_detect() {
     uint16_t safe_pulse_duration;
-    cli();  // ✅ Disable interrupts to safely read pulse_duration
+    cli();  // Disable interrupts to safely read pulse_duration
     safe_pulse_duration = pulse_duration;
-    sei();  // ✅ Re-enable interrupts
+    sei();  // Re-enable interrupts
 
-    if (timeout_flag) {  // ✅ If no signal received for too long, reset everything
-        pulse_duration = 1;  // ✅ Prevent divide-by-zero
+    if (timeout_flag) {  // If no signal received for too long, reset everything
+        pulse_duration = 1;  // Prevent divide-by-zero
         PORTC &= ~(1 << PC6);
         PORTD &= ~(1 << PD0);
-        return;  // ✅ Skip further calculations
+        return;  // Skip further calculations
     }
 
-    if (safe_pulse_duration > 0) {  // ✅ Prevent divide-by-zero
-        float frequency = 62500.0 / safe_pulse_duration;  // ✅ Corrected calculation
+    if (safe_pulse_duration > 0) {  // Prevent divide-by-zero
+        float frequency = 62500.0 / safe_pulse_duration;  // Corrected calculation
 
-        // ✅ USB Output
+        // USB Output
         m_usb_tx_int((int)frequency);
         m_usb_tx_string(" Hz\n");
 
-        // ✅ LED Logic
+        // LED Logic
         if (frequency > 24 && frequency < 26) {  // ~25 Hz
             PORTC |= (1 << PC6);
             PORTD &= ~(1 << PD0);
