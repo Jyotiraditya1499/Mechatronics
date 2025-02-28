@@ -1,0 +1,13 @@
+﻿"Symbol";"Value";"Unit";
+"TraceParts.PartNumber";"90-28022024-015103";"";
+"REFERENCE";"3310Y-001-103L";"";
+"rs_stock_number";"5220625P";"";
+"TraceParts.PartTitle";"3310Y conductive plastic pot,10K lin 9mm";"";
+"url";"https://uk.rs-online.com/web/p/potentiometers/5220625p//?cm_mmc=aff-_-uk-_-traceparts-_-5220625P";"";
+"SUPPLIER_NAME";"RS Components";"";
+"SUPPLIER";"Bourns";"";
+"DESIGN";"3310Y conductive plastic pot,10K lin 9mm";"";
+"TraceParts.InstanceId";"90-28022024-0151032N3XX9WWY2MK673V115V3T3RA";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.PartLanguage";"en";"";
+"TraceParts.PartVersion";"1.0.0";"";
