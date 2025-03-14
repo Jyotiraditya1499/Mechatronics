@@ -13,7 +13,9 @@ void ADC_init() {
     clear(ADMUX, REFS1);   // Set reference voltage to VCC (5V)
     set(ADMUX, REFS0);  
 
-    set(ADCSRA, ADPS2) | (ADCSRA, ADPS1) | (ADCSRA, ADPS0); // Set ADC clock prescaler to 128
+    set(ADCSRA, ADPS2);  // Set ADC clock prescaler to 128
+    set(ADCSRA, ADPS0);
+    set(ADCSRA, ADPS1);
 
 
     set(ADCSRA, ADEN); // Enable ADC
